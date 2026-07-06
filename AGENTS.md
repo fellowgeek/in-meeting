@@ -7,8 +7,6 @@ This document provides a comprehensive overview of the "In Meeting" project, its
 ## 1. Project Overview
 "In Meeting" is a lightweight, sandbox-free macOS application written in Swift. It monitors the active capture states (on/off status) of all camera and microphone devices connected to the Mac and prints clean, real-time status transitions to standard output.
 
-This project is a clean Swift port/rewrite of the core monitoring functionality originally inspired by the Objective-C `OverSight` project.
-
 ---
 
 ## 2. Core Architecture
