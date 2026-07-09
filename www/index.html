@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>In Meeting — macOS Utility</title>
+    
+    <!-- Premium Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Local Stylesheet -->
+    <link rel="stylesheet" href="index.css">
+</head>
+<body class="theme-dark">
+    
+    <!-- Top Header -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="logo">
+                <span class="logo-icon">📹</span>
+                <span class="logo-text">In Meeting</span>
+            </div>
+            
+            <nav class="header-nav">
+                <a href="#features">Features</a>
+                <a href="#how-to-use">How to Use</a>
+                <a href="#architecture">Architecture</a>
+                <button id="theme-toggle" class="btn-theme-toggle" aria-label="Toggle Theme">
+                    <span class="theme-icon-light">☀️</span>
+                    <span class="theme-icon-dark">🌙</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-container">
+            <div class="hero-badge">macOS 13.0+ Utility</div>
+            <h1 class="hero-title">Control Your Space, Sync Your Status</h1>
+            <p class="hero-subtitle">
+                A lightweight, background utility that monitors camera and microphone state transitions natively, triggering custom webhooks and notifications with near-zero CPU and battery impact.
+            </p>
+            
+            <div class="hero-ctas">
+                <a href="#how-to-use" class="btn btn-primary">Get Started</a>
+                <a href="https://github.com/fellowgeek/in-meeting" class="btn btn-secondary">View Source</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive macOS Simulator Section -->
+    <section class="simulator-section">
+        <div class="simulator-container">
+            <div class="simulator-header">
+                <h3>Live Status Simulator</h3>
+                <p>Click the menu bar status icon to cycle hardware states and observe webhook triggers in real-time.</p>
+            </div>
+            
+            <!-- Mock macOS Desktop Top Menu Bar -->
+            <div class="mock-menubar">
+                <div class="menubar-left">
+                    <span class="menubar-apple"></span>
+                    <span class="menubar-item active-menu">File</span>
+                    <span class="menubar-item">Edit</span>
+                    <span class="menubar-item">View</span>
+                    <span class="menubar-item">Window</span>
+                </div>
+                <div class="menubar-right">
+                    <!-- Status Icon (Clickable Indicator) -->
+                    <button id="menu-bar-trigger" class="status-item-btn" title="Cycle In Meeting Status">
+                        <span id="status-icon" class="status-icon icon-idle"></span>
+                        <span class="status-label">In Meeting</span>
+                    </button>
+                    
+                    <span class="menubar-time">9:41 AM</span>
+                </div>
+            </div>
+            
+            <!-- Terminal Output and Webhook Log Window -->
+            <div class="sim-dashboard">
+                <!-- Device Control Center -->
+                <div class="control-panel panel-glass">
+                    <h4>Simulated Device Controls</h4>
+                    <div class="control-group">
+                        <label>Hardware Selection</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="sim-device-type" value="camera" checked>
+                                <span>Camera (FaceTime HD)</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="sim-device-type" value="microphone">
+                                <span>Microphone (AirPods)</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>Simulated Action</label>
+                        <div class="button-toggle-group">
+                            <button id="btn-set-active" class="btn-toggle active">Set Active</button>
+                            <button id="btn-set-inactive" class="btn-toggle">Set Inactive</button>
+                            <button id="btn-set-paused" class="btn-toggle">Pause App</button>
+                        </div>
+                    </div>
+                    
+                    <div class="status-indicator">
+                        <span>Current Mode:</span>
+                        <strong id="current-mode-badge" class="mode-badge badge-active">ACTIVE</strong>
+                    </div>
+                </div>
+                
+                <!-- Webhook Logs Terminal -->
+                <div class="terminal-panel panel-glass">
+                    <div class="terminal-header">
+                        <div class="window-dots">
+                            <span class="dot-red"></span>
+                            <span class="dot-yellow"></span>
+                            <span class="dot-green"></span>
+                        </div>
+                        <span class="terminal-title">in-meeting --stdout-stream</span>
+                    </div>
+                    <div class="terminal-body">
+                        <code id="terminal-content">
+<span class="term-dim"># App initialized. Buffering disabled.</span>
+<span class="term-dim"># Monitoring active CoreAudio and CoreMediaIO property listener blocks...</span>
+Device Discovered: FaceTime HD Camera (UUID: CAM_01), Active: false
+Device Discovered: Built-in Microphone (UUID: MIC_01), Active: false
+<span class="term-green">[Active] Camera: FaceTime HD Camera</span>
+[Webhook Success] POST to http://localhost:8080/active (200 OK)
+                        </code>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Features Grid -->
+    <section id="features" class="features-section">
+        <div class="container">
+            <h2 class="section-title">Why "In Meeting"?</h2>
+            <p class="section-subtitle">A native, modern solution that replaces legacy polling tasks.</p>
+            
+            <div class="features-grid">
+                <div class="feature-card card-glass">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Direct Framework Calls</h3>
+                    <p>Uses CoreAudio and CoreMediaIO listener blocks directly. Triggers instantly without background processes scanning or polling log streams.</p>
+                </div>
+                
+                <div class="feature-card card-glass">
+                    <div class="feature-icon">🔌</div>
+                    <h3>Customizable Webhooks</h3>
+                    <p>Configure Combined or Separate endpoint URLs for audio and video feeds. Supports both POST (JSON body) and GET (parameter query replacements) requests.</p>
+                </div>
+                
+                <div class="feature-card card-glass">
+                    <div class="feature-icon">🔁</div>
+                    <h3>Fault Tolerant Retries</h3>
+                    <p>Automatically retries failed webhook requests up to 3 times using exponential backoff to handle temporary network loss.</p>
+                </div>
+                
+                <div class="feature-card card-glass">
+                    <div class="feature-icon">⚙️</div>
+                    <h3>Launch at Login</h3>
+                    <p>Integrates natively with the modern macOS `SMAppService` API to register itself as a login launch item with a single toggle switch.</p>
+                </div>
+                
+                <div class="feature-card card-glass">
+                    <div class="feature-icon">🔔</div>
+                    <h3>Local Notifications</h3>
+                    <p>Receive immediate, compliant native macOS system notifications on state transitions, including pause status support.</p>
+                </div>
+                
+                <div class="feature-card card-glass">
+                    <div class="feature-icon">🔋</div>
+                    <h3>Extremely Lightweight</h3>
+                    <p>Stays strictly under 40 MB of RAM usage and uses 0.0% CPU when idle, helping preserve battery life.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How to Use / Install Instructions -->
+    <section id="how-to-use" class="how-to-use-section">
+        <div class="container small-container">
+            <h2 class="section-title">How to Build and Run</h2>
+            
+            <!-- Tabs for UI vs CLI -->
+            <div class="tab-container card-glass">
+                <div class="tab-headers">
+                    <button class="tab-header active" data-tab="xcode-ui">Xcode UI (Recommended)</button>
+                    <button class="tab-header" data-tab="cli">Command Line</button>
+                </div>
+                
+                <div class="tab-contents">
+                    <!-- Xcode UI Content -->
+                    <div class="tab-panel active" id="tab-xcode-ui">
+                        <ol class="step-list">
+                            <li>
+                                <strong>Clone & Open:</strong> Open Xcode and select **Open existing project**, choosing <code>In Meeting.xcodeproj</code>.
+                            </li>
+                            <li>
+                                <strong>Select Target Scheme:</strong> Ensure the target scheme is set to **In Meeting** in the scheme dropdown (located in the top window bar).
+                            </li>
+                            <li>
+                                <strong>Build & Run:</strong> Press <code>⌘R</code> or select **Product > Run** from the main menu.
+                            </li>
+                        </ol>
+                    </div>
+                    
+                    <!-- CLI Content -->
+                    <div class="tab-panel" id="tab-cli">
+                        <p class="tab-desc">Because terminal environments might resolve tools targeting generic CommandLineTools without SwiftUI support, compile by explicitly setting the toolchain path:</p>
+                        
+                        <div class="code-block-wrapper">
+                            <pre><code>DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild -project "In Meeting.xcodeproj" -scheme "In Meeting" clean build</code></pre>
+                            <button class="btn-copy" data-copy="DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild -project &quot;In Meeting.xcodeproj&quot; -scheme &quot;In Meeting&quot; clean build">Copy</button>
+                        </div>
+                        
+                        <p class="tab-desc">To run the built bundle and stream transitions output directly into stdout:</p>
+                        <div class="code-block-wrapper">
+                            <pre><code>~/Library/Developer/Xcode/DerivedData/In_Meeting-&lt;hash&gt;/Build/Products/Debug/In\ Meeting.app/Contents/MacOS/In\ Meeting</code></pre>
+                            <button class="btn-copy" data-copy="~/Library/Developer/Xcode/DerivedData/In_Meeting-&lt;hash&gt;/Build/Products/Debug/In\ Meeting.app/Contents/MacOS/In\ Meeting">Copy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section id="architecture" class="architecture-section">
+        <div class="container">
+            <h2 class="section-title">Application Lifecycle</h2>
+            <p class="section-subtitle">How physical changes map to webhook events.</p>
+            
+            <div class="arch-flow panel-glass">
+                <div class="flow-step">
+                    <div class="step-num">1</div>
+                    <h4>Hardware Event</h4>
+                    <p>Device triggers a state transition (active or inactive).</p>
+                </div>
+                <div class="flow-divider">➔</div>
+                <div class="flow-step">
+                    <div class="step-num">2</div>
+                    <h4>Listener Block</h4>
+                    <p>CoreMediaIO/CoreAudio triggers dynamic observers.</p>
+                </div>
+                <div class="flow-divider">➔</div>
+                <div class="flow-step">
+                    <div class="step-num">3</div>
+                    <h4>State Decision</h4>
+                    <p>AppDelegate queries new state parameters.</p>
+                </div>
+                <div class="flow-divider">➔</div>
+                <div class="flow-step">
+                    <div class="step-num">4</div>
+                    <h4>Webhook Dispatched</h4>
+                    <p>URLSession issues POST/GET with percent-encoded query variables.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="container">
+            <p>In Meeting Utility — Native macOS Application</p>
+            <p class="footer-subtext">Designed for macOS 13.0+. App Sandbox disabled to support hardware device registries.</p>
+        </div>
+    </footer>
+
+    <!-- Local Script -->
+    <script src="index.js"></script>
+</body>
+</html>

@@ -28,7 +28,13 @@ Instead of using heavy, asynchronous subprocesses to stream and parse macOS syst
 
 ## 3. Current Project State & Files
 - **App Sandbox**: Disabled. The entitlements file [In_Meeting.entitlements](In%20Meeting/In_Meeting.entitlements) has `com.apple.security.app-sandbox` set to `false`. This is mandatory to access CoreAudio and CoreMediaIO system registers.
-- **Main Implementation**: Implemented entirely in Swift inside [AppDelegate.swift](In%20Meeting/AppDelegate.swift).
+- **Main Implementation Files**:
+  - [AppDelegate.swift](In%20Meeting/AppDelegate.swift): App lifecycle, status bar menu representation, and device observer registries.
+  - [NotificationManager.swift](In%20Meeting/NotificationManager.swift): Integrates local macOS banners via UserNotifications framework.
+  - [SettingsManager.swift](In%20Meeting/SettingsManager.swift): Coordinates preferences storage and handles Launch at Login via `SMAppService`.
+  - [SettingsView.swift](In%20Meeting/SettingsView.swift): SwiftUI settings panels.
+  - [SettingsWindowController.swift](In%20Meeting/SettingsWindowController.swift): Native window controller hosting the settings view.
+  - [WebhookManager.swift](In%20Meeting/WebhookManager.swift): Schedules async Webhook calls with percent-encoding queries and exponential backoff retry cycles.
 - **Console Log Output Format**:
   - Initial discovery: `Device Discovered: <Name> (UUID: <UUID>), Active: <true/false>`
   - Activation: `[Active] <Camera/Microphone>: <Name>`
@@ -47,7 +53,7 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild -project "In
 
 ### Run (from CLI for log output):
 ```bash
-"/Users/erfan/Library/Developer/Xcode/DerivedData/In_Meeting-<hash>/Build/Products/Debug/In Meeting.app/Contents/MacOS/In Meeting"
+~/Library/Developer/Xcode/DerivedData/In_Meeting-<hash>/Build/Products/Debug/In\ Meeting.app/Contents/MacOS/In\ Meeting
 ```
 
 ---
@@ -56,3 +62,6 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild -project "In
 - **Memory Safety**: Any event callback blocks registered with CoreAudio/CoreMediaIO properties must capture references weakly (`[weak self]`) to avoid strong reference cycles.
 - **Dynamic Property Introspection**: Always check if a device responds to private properties using `device.responds(to: NSSelectorFromString("connectionID"))` before querying it to prevent runtime crashes.
 - **No Log stream Subprocesses**: Avoid calling `log stream` or spawning shell tasks for OS logs. Use direct Apple API events for low-power, instant notifications.
+- **Webhook Placeholders**: Ensure all parameter replacements in webhook URL templates are percent-encoded for query strings (use `urlEncode: true` parameter).
+- **UI Layouts**: Avoid using standard SwiftUI `Form` wrapper on macOS where pickers and text fields can get truncated; prefer custom layouts with `VStack(alignment: .leading)` and `.labelsHidden()` pickers.
+- **Launch at Login**: Maintain using `SMAppService.mainApp` API to coordinate startup registrations.
