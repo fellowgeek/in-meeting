@@ -1,0 +1,89 @@
+# ==============================================================================
+# In Meeting - Git Ignore Configuration
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# macOS System Files
+# ------------------------------------------------------------------------------
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon files & thumbnails
+Icon\r
+._*
+
+# Files that may be created by macOS Desktop Services
+.DocumentRevisions-V100
+.Spotlight-V100
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on external devices
+.TemporaryItems
+.apdisk
+
+# ------------------------------------------------------------------------------
+# Xcode / Apple Development
+# ------------------------------------------------------------------------------
+# Xcode Build outputs
+build/
+DerivedData/
+
+# Personal Xcode user settings & state
+# (These contain paths, window sizes, cursor positions, etc.)
+xcuserdata/
+*.xcuserdata/
+*.xcuserstate
+*.xsyncdestination
+*.xccheckout
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+!default.mode1v3
+!default.mode2v3
+!default.perspectivev3
+
+# ------------------------------------------------------------------------------
+# Swift Package Manager (SPM)
+# ------------------------------------------------------------------------------
+.build/
+.swiftpm/
+
+# Note: Package.resolved contains the specific versions of dependencies used.
+# Since this is an application (not a library), Package.resolved should be tracked
+# in git to ensure reproducible builds. We do NOT ignore Package.resolved.
+
+# ------------------------------------------------------------------------------
+# Common Package Managers / Tools (Future Proofing)
+# ------------------------------------------------------------------------------
+# CocoaPods
+Pods/
+
+# Carthage
+Carthage/Build/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# ------------------------------------------------------------------------------
+# IDEs / Editor Configurations (Developer Environment Settings)
+# ------------------------------------------------------------------------------
+# VS Code
+.vscode/
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# JetBrains (AppCode, Xcode alternative)
+.idea/
+
+# Swap files & editor backups (Vim / Emacs)
+*~
+*.swp
+*.swo
+.lock-wscript
