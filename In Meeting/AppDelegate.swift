@@ -116,22 +116,93 @@ class MonitoredDevice {
         }
     }
     
+    func synchronizeState() {
+        let newState = queryIsRunning()
+        if newState != isRunning {
+            isRunning = newState
+            onStateChange(self, isRunning)
+        }
+    }
+    
     deinit {
         stopMonitoring()
     }
 }
 
 @main
-class AppDelegate: NSObject, NSApplicationDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     /// Currently active device monitors keyed by the device uniqueID.
     var activeMonitors: [String: MonitoredDevice] = [:]
+    
+    /// The Menu Bar Status Item
+    var statusItem: NSStatusItem!
+    
+    /// The context menu for the status item
+    var statusMenu: NSMenu!
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         setbuf(Darwin.stdout, nil)
         print("Starting camera and microphone active state monitoring...")
+        
+        // 1. Load User Settings
+        SettingsManager.shared.load()
+        
+        // 2. Hide Dock Icon (runs strictly as Menu Bar utility)
+        NSApp.setActivationPolicy(.accessory)
+        
+        // 3. Setup Menu Bar Item and Context Menu
+        setupStatusItem()
+        
+        // 4. Request notifications early if enabled
+        if SettingsManager.shared.notificationsEnabled {
+            NotificationManager.shared.requestAuthorization()
+        }
+        
+        // 5. Initial Device Monitoring Configuration
         setupObservers()
         discoverAndMonitorDevices()
+        
+        // 6. Update visual icon state
+        updateStatusItemIcon()
+    }
+
+    func setupStatusItem() {
+        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        
+        statusMenu = NSMenu()
+        statusMenu.delegate = self
+        statusItem.menu = statusMenu
+    }
+    
+    func updateStatusItemIcon() {
+        guard let button = statusItem.button else { return }
+        
+        let isPaused = SettingsManager.shared.isPaused
+        let hasActiveDevices = activeMonitors.values.contains { $0.queryIsRunning() }
+        
+        let symbolName: String
+        if isPaused {
+            symbolName = "video.slash"
+        } else if hasActiveDevices {
+            symbolName = "record.circle.fill"
+        } else {
+            symbolName = "video"
+        }
+        
+        if let image = NSImage(systemSymbolName: symbolName, accessibilityDescription: "In Meeting Status") {
+            image.isTemplate = true
+            button.image = image
+        }
+        
+        // Configure tooltips
+        if isPaused {
+            button.toolTip = "In Meeting: Detection Paused"
+        } else if hasActiveDevices {
+            button.toolTip = "In Meeting: Device is Active!"
+        } else {
+            button.toolTip = "In Meeting: Idle"
+        }
     }
 
     func setupObservers() {
@@ -168,6 +239,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         guard let monitor = MonitoredDevice(device: device, onStateChange: { [weak self] (monitored, isRunning) in
             self?.logDeviceStateChange(monitored.device, isRunning: isRunning)
+            self?.handleDeviceStateChange(monitored.device, isVideo: monitored.isVideo, isRunning: isRunning)
         }) else {
             print("Device skipped (could not obtain ConnectionID): \(device.localizedName) (UUID: \(uuid))")
             return
@@ -177,6 +249,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         activeMonitors[uuid] = monitor
 
         print("Device Discovered: \(device.localizedName) (UUID: \(uuid)), Active: \(monitor.queryIsRunning())")
+        updateStatusItemIcon()
     }
 
     func unmonitorDevice(_ device: AVCaptureDevice) {
@@ -185,6 +258,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             monitor.stopMonitoring()
             activeMonitors.removeValue(forKey: uuid)
             print("Device Removed: \(device.localizedName) (UUID: \(uuid))")
+            updateStatusItemIcon()
         }
     }
 
@@ -205,12 +279,118 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let status = isRunning ? "Active" : "Inactive"
         print("[\(status)] \(type): \(device.localizedName)")
     }
+    
+    func handleDeviceStateChange(_ device: AVCaptureDevice, isVideo: Bool, isRunning: Bool) {
+        // 1. Redraw status bar icon state
+        updateStatusItemIcon()
+        
+        // 2. Short-circuit alerts if global monitoring is paused
+        guard !SettingsManager.shared.isPaused else { return }
+        
+        // 3. Dispatch Local Notifications
+        NotificationManager.shared.sendNotification(
+            deviceName: device.localizedName,
+            isVideo: isVideo,
+            isActive: isRunning
+        )
+        
+        // 4. Dispatch Webhooks
+        WebhookManager.shared.dispatchWebhook(
+            deviceName: device.localizedName,
+            isVideo: isVideo,
+            isActive: isRunning
+        )
+    }
 
     func applicationWillTerminate(_ aNotification: Notification) {
-        // Clean up all active monitors
         for monitor in activeMonitors.values {
             monitor.stopMonitoring()
         }
         activeMonitors.removeAll()
+    }
+    
+    // MARK: - NSMenuDelegate (Dynamic Status Menu Builder)
+    
+    func menuNeedsUpdate(_ menu: NSMenu) {
+        menu.removeAllItems()
+        
+        // 1. Title Header
+        let headerItem = NSMenuItem(title: "Monitored Devices:", action: nil, keyEquivalent: "")
+        headerItem.isEnabled = false
+        menu.addItem(headerItem)
+        
+        // 2. Enumerate monitored devices and display their states
+        if activeMonitors.isEmpty {
+            let emptyItem = NSMenuItem(title: "  No devices found", action: nil, keyEquivalent: "")
+            emptyItem.isEnabled = false
+            menu.addItem(emptyItem)
+        } else {
+            let sortedMonitors = activeMonitors.values.sorted { $0.device.localizedName < $1.device.localizedName }
+            for monitor in sortedMonitors {
+                let isRunning = monitor.queryIsRunning()
+                let typeSymbol = monitor.isVideo ? "📹" : "🎙️"
+                let statusDot = isRunning ? "🔴" : "⚪"
+                let stateText = isRunning ? "Active" : "Idle"
+                let title = "  \(statusDot) \(typeSymbol) \(monitor.device.localizedName) (\(stateText))"
+                
+                let item = NSMenuItem(title: title, action: nil, keyEquivalent: "")
+                item.isEnabled = false
+                menu.addItem(item)
+            }
+        }
+        
+        menu.addItem(NSMenuItem.separator())
+        
+        // 3. Pause/Resume monitoring
+        let isPaused = SettingsManager.shared.isPaused
+        let pauseTitle = isPaused ? "Resume Detection" : "Pause Detection"
+        let pauseItem = NSMenuItem(title: pauseTitle, action: #selector(togglePause), keyEquivalent: "")
+        menu.addItem(pauseItem)
+        
+        menu.addItem(NSMenuItem.separator())
+        
+        // 4. Open Settings
+        let settingsItem = NSMenuItem(title: "Settings...", action: #selector(openSettings), keyEquivalent: ",")
+        menu.addItem(settingsItem)
+        
+        // 5. About
+        let aboutItem = NSMenuItem(title: "About...", action: #selector(openAbout), keyEquivalent: "")
+        menu.addItem(aboutItem)
+        
+        menu.addItem(NSMenuItem.separator())
+        
+        // 6. Quit App
+        let quitItem = NSMenuItem(title: "Quit In Meeting", action: #selector(quitApp), keyEquivalent: "q")
+        menu.addItem(quitItem)
+    }
+    
+    // MARK: - Menu Actions
+    
+    @objc func togglePause() {
+        SettingsManager.shared.isPaused.toggle()
+        updateStatusItemIcon()
+        
+        let isPaused = SettingsManager.shared.isPaused
+        print("Detection \(isPaused ? "PAUSED" : "RESUMED")")
+        
+        if !isPaused {
+            for monitor in activeMonitors.values {
+                monitor.synchronizeState()
+            }
+        }
+    }
+    
+    @objc func openSettings() {
+        SettingsWindowController.shared.showWindow()
+    }
+    
+    @objc func openAbout() {
+        if let url = URL(string: "https://example.com") {
+            NSWorkspace.shared.open(url)
+        }
+    }
+    
+    @objc func quitApp() {
+        NSApp.terminate(nil)
     }
 }
