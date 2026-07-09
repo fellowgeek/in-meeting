@@ -25,9 +25,9 @@ The application must follow macOS design guidelines, adopting native components 
 ### 2.1 Menu Bar (Status Item)
 - **Presence:** The app runs exclusively as a macOS Menu Bar extra (no Dock icon, no main window on startup).
 - **Status Item Icon:**
-  - **Idle State:** A subtle, monochromatic camera/microphone outline.
-  - **Active State (Device in Use):** A filled colored icon or a distinct indicator (e.g., red/orange dot next to the icon, or filled icon) representing that recording is currently in progress.
-  - **Paused State:** The icon is grayed out or displays a pause badge (e.g., small pause symbol overlay).
+  - **Idle State:** A subtle, monochromatic camera outline (using SF Symbol `video`).
+  - **Active State (Device in Use):** A filled recording circle indicator (using SF Symbol `record.circle.fill`).
+  - **Paused State:** A camera outline with a slash (using SF Symbol `video.slash`).
 - **Status Menu (Left-Click Menu):**
   - **Active Device Status:** Displays a list of active devices (e.g., `● FaceTime HD Camera` in red, or `○ Microphones` in gray if inactive).
   - **Pause Detection / Resume Detection:** A toggle item that temporarily halts event triggers.
@@ -39,17 +39,18 @@ The application must follow macOS design guidelines, adopting native components 
 A native-feeling tabbed or sidebar preferences window containing the following sections:
 
 #### Tab 1: General & Notifications
-- **Launch at Login:** Checkbox to launch the app automatically.
+- **Launch at Login:** Checkbox to launch the app automatically. Implemented via macOS 13+ `SMAppService.mainApp` API.
 - **Enable Notifications:** Checkbox to toggle native macOS User Notifications.
   - Sub-option: **Notify on Activation** (e.g., "Camera FaceTime HD Camera is now Active").
   - Sub-option: **Notify on Deactivation** (e.g., "Microphone FaceTime HD is now Inactive").
 
 #### Tab 2: Webhooks Configuration
-- **Webhook Integration Type:** Segmented control to choose between:
+- **Webhook Integration Type:** Radio button group selector to choose between:
   - `Combined URL` (Use a single webhook URL for all audio/video events).
   - `Separate URLs` (Configure individual webhook URLs for Audio and Video events).
 - **Endpoint Settings:**
-  - **Method Selector:** `POST` (default) or `GET`.
+  - **Method Selector:** Segmented control to choose between `GET` and `POST`.
+  - **Description Caption:** A caption showing dynamic explanation details based on the selected method.
   - **URL Input Field:** Placeholder indicating expected format (e.g., `https://api.example.com/webhook`).
   - **Active Event Webhook URL:** The target URL triggered when a device becomes active.
   - **Inactive Event Webhook URL:** The target URL triggered when a device becomes inactive.
