@@ -23,8 +23,14 @@ class WebhookManager {
             }
         }
         
-        guard !urlString.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+        let trimmed = urlString.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
             return // No URL configured for this event
+        }
+        
+        guard trimmed.isValidWebhookURL else {
+            print("[Webhook Warning] Configured URL is invalid: \(urlString)")
+            return
         }
         
         // 2. Perform placeholder replacement in the URL itself (useful for GET queries or path templates)
@@ -107,8 +113,14 @@ class WebhookManager {
     
     /// Sends a test webhook call to verify configurations manually.
     func sendTestWebhook(to urlString: String, method: String, completion: @escaping (Bool, String) -> Void) {
-        guard !urlString.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+        let trimmed = urlString.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
             completion(false, "URL is empty.")
+            return
+        }
+        
+        guard trimmed.isValidWebhookURL else {
+            completion(false, "Invalid URL format.")
             return
         }
         

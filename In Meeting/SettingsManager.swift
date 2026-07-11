@@ -168,3 +168,33 @@ class SettingsManager: ObservableObject {
         }
     }
 }
+
+extension String {
+    var isValidWebhookURL: Bool {
+        let trimmed = self.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty {
+            return true // empty is acceptable (means disabled)
+        }
+        
+        // Check if starts with http:// or https:// (case insensitive)
+        let lowercased = trimmed.lowercased()
+        guard lowercased.hasPrefix("http://") || lowercased.hasPrefix("https://") else {
+            return false
+        }
+        
+        // Temporarily replace template placeholders with placeholder text to avoid validation failures
+        let tempString = trimmed
+            .replacingOccurrences(of: "{{device_name}}", with: "placeholder")
+            .replacingOccurrences(of: "{{device_type}}", with: "placeholder")
+            .replacingOccurrences(of: "{{device_status}}", with: "placeholder")
+            .replacingOccurrences(of: "{{timestamp}}", with: "placeholder")
+        
+        guard let url = URL(string: tempString),
+              let host = url.host,
+              !host.isEmpty else {
+            return false
+        }
+        
+        return true
+    }
+}

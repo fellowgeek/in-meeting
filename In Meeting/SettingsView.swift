@@ -157,59 +157,44 @@ struct SettingsView: View {
                     .font(.headline)
                 
                 if settings.webhookType == "combined" {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Active URL (Device turned ON)")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                        TextField("https://api.example.com/active", text: $settings.combinedActiveURL)
-                            .textFieldStyle(.roundedBorder)
-                            .disableAutocorrection(true)
+                    VStack(alignment: .leading, spacing: 10) {
+                        ValidatedURLField(
+                            label: "Active URL (Device turned ON)",
+                            placeholder: "https://api.example.com/active",
+                            text: $settings.combinedActiveURL
+                        )
                         
-                        Text("Inactive URL (Device turned OFF)")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .padding(.top, 4)
-                        TextField("https://api.example.com/inactive", text: $settings.combinedInactiveURL)
-                            .textFieldStyle(.roundedBorder)
-                            .disableAutocorrection(true)
+                        ValidatedURLField(
+                            label: "Inactive URL (Device turned OFF)",
+                            placeholder: "https://api.example.com/inactive",
+                            text: $settings.combinedInactiveURL
+                        )
                     }
                 } else {
                     VStack(alignment: .leading, spacing: 10) {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Audio Device Active URL")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                            TextField("https://api.example.com/audio/active", text: $settings.audioActiveURL)
-                                .textFieldStyle(.roundedBorder)
-                                .disableAutocorrection(true)
-                        }
+                        ValidatedURLField(
+                            label: "Audio Device Active URL",
+                            placeholder: "https://api.example.com/audio/active",
+                            text: $settings.audioActiveURL
+                        )
                         
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Audio Device Inactive URL")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                            TextField("https://api.example.com/audio/inactive", text: $settings.audioInactiveURL)
-                                .textFieldStyle(.roundedBorder)
-                                .disableAutocorrection(true)
-                        }
+                        ValidatedURLField(
+                            label: "Audio Device Inactive URL",
+                            placeholder: "https://api.example.com/audio/inactive",
+                            text: $settings.audioInactiveURL
+                        )
                         
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Video Device Active URL")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                            TextField("https://api.example.com/video/active", text: $settings.videoActiveURL)
-                                .textFieldStyle(.roundedBorder)
-                                .disableAutocorrection(true)
-                        }
+                        ValidatedURLField(
+                            label: "Video Device Active URL",
+                            placeholder: "https://api.example.com/video/active",
+                            text: $settings.videoActiveURL
+                        )
                         
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Video Device Inactive URL")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                            TextField("https://api.example.com/video/inactive", text: $settings.videoInactiveURL)
-                                .textFieldStyle(.roundedBorder)
-                                .disableAutocorrection(true)
-                        }
+                        ValidatedURLField(
+                            label: "Video Device Inactive URL",
+                            placeholder: "https://api.example.com/video/inactive",
+                            text: $settings.videoInactiveURL
+                        )
                     }
                 }
             }
@@ -261,7 +246,7 @@ struct SettingsView: View {
                             Text("Test Webhook")
                         }
                     }
-                    .disabled(testInProgress || getPrimaryTestURL().isEmpty)
+                    .disabled(testInProgress || getPrimaryTestURL().isEmpty || !getPrimaryTestURL().isValidWebhookURL)
                     
                     Spacer()
                 }
@@ -307,3 +292,43 @@ struct SettingsView: View {
         }
     }
 }
+
+struct ValidatedURLField: View {
+    let label: String
+    let placeholder: String
+    @Binding var text: String
+    
+    var isValid: Bool {
+        text.isValidWebhookURL
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            
+            TextField(placeholder, text: $text)
+                .textFieldStyle(.roundedBorder)
+                .disableAutocorrection(true)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 4)
+                        .stroke(isValid ? Color.clear : Color.red.opacity(0.6), lineWidth: 1.5)
+                )
+            
+            if !isValid {
+                HStack(spacing: 4) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundColor(.red)
+                        .font(.caption)
+                    Text("Must be a valid URL starting with http:// or https://")
+                        .foregroundColor(.red)
+                        .font(.caption)
+                }
+                .padding(.top, 2)
+                .transition(.opacity)
+            }
+        }
+    }
+}
+

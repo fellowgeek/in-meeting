@@ -207,8 +207,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func setupObservers() {
         let center = NotificationCenter.default
-        center.addObserver(self, selector: #selector(deviceWasConnected(_:)), name: .AVCaptureDeviceWasConnected, object: nil)
-        center.addObserver(self, selector: #selector(deviceWasDisconnected(_:)), name: .AVCaptureDeviceWasDisconnected, object: nil)
+        center.addObserver(self, selector: #selector(deviceWasConnected(_:)), name: AVCaptureDevice.wasConnectedNotification, object: nil)
+        center.addObserver(self, selector: #selector(deviceWasDisconnected(_:)), name: AVCaptureDevice.wasDisconnectedNotification, object: nil)
     }
 
     func discoverAndMonitorDevices() {
