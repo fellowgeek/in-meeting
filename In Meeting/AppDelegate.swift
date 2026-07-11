@@ -328,7 +328,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             let sortedMonitors = activeMonitors.values.sorted { $0.device.localizedName < $1.device.localizedName }
             for monitor in sortedMonitors {
                 let isRunning = monitor.queryIsRunning()
-                let typeSymbol = monitor.isVideo ? "📹" : "🎙️"
+                let typeSymbol = monitor.isVideo ? "📹" : "🎤"
                 let statusDot = isRunning ? "🔴" : "⚪"
                 let stateText = isRunning ? "Active" : "Idle"
                 let title = "  \(statusDot) \(typeSymbol) \(monitor.device.localizedName) (\(stateText))"
