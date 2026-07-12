@@ -9,11 +9,7 @@ cask "in-meeting" do
 
   depends_on macos: :sonoma
 
-  # Matches the actual bundle name inside the DMG
   app "In Meeting.app"
-  
-  # Updated path to reflect the correct app name folder structure
-  binary "#{appdir}/In Meeting.app/Contents/MacOS/in-meeting", target: "in-meeting"
 
   zap trash: [
     "~/Library/Application Support/in-meeting",
