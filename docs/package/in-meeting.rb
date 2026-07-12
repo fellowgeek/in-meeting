@@ -7,11 +7,13 @@ cask "in-meeting" do
   desc "Lightweight privacy and home automation utility driven by macOS hardware observers"
   homepage "https://github.com/fellowgeek/in-meeting"
 
-  depends_on macos: ">= :sonoma"
+  depends_on macos: :sonoma
 
-  app "in-meeting.app"
-  # Target the internal executable directly to expose it to the CLI
-  binary "#{appdir}/in-meeting.app/Contents/MacOS/in-meeting", target: "in-meeting"
+  # Matches the actual bundle name inside the DMG
+  app "In Meeting.app"
+  
+  # Updated path to reflect the correct app name folder structure
+  binary "#{appdir}/In Meeting.app/Contents/MacOS/in-meeting", target: "in-meeting"
 
   zap trash: [
     "~/Library/Application Support/in-meeting",
