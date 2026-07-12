@@ -4,6 +4,8 @@
 
 A lightweight macOS utility that instantly triggers webhooks to update your home automation status lights (free/busy) and displays native notifications the second any app accesses your camera or microphone. Unlike heavy log-polling scripts, it relies entirely on native macOS framework observers, resulting in near-zero CPU and battery impact.
 
+![logo](docs/icon_256.png)
+
 ---
 
 ## Key Features
@@ -64,7 +66,7 @@ graph TD
 If you prefer a precompiled application bundle, you can install it using Homebrew:
 
 ```bash
-brew install in-meeting
+brew install fellowgeek/tap/in-meeting
 ```
 
 Once installed, open your `Applications` folder and launch **In Meeting.app**.
