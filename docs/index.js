@@ -68,38 +68,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // ==========================================
-    // 4. Application Showcase Logic
-    // ==========================================
-    const showcaseTabs = document.querySelectorAll('.showcase-tab');
-    const showcasePanels = document.querySelectorAll('.showcase-panel');
-    const showcaseTitle = document.getElementById('showcase-title');
-
-    const titleMap = {
-        'menu': 'Status Bar Menu — In Meeting',
-        'general': 'General Preferences — In Meeting',
-        'webhooks': 'Webhook Orchestration — In Meeting'
-    };
-    
-    showcaseTabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            const targetShowcase = tab.getAttribute('data-showcase');
-            
-            // Remove active states from tabs & panels
-            showcaseTabs.forEach(t => t.classList.remove('active'));
-            showcasePanels.forEach(p => p.classList.remove('active'));
-            
-            // Activate selected tab & panel
-            tab.classList.add('active');
-            const panel = document.getElementById(`showcase-${targetShowcase}`);
-            if (panel) {
-                panel.classList.add('active');
-            }
-
-            // Update window title dynamically
-            if (showcaseTitle && titleMap[targetShowcase]) {
-                showcaseTitle.textContent = titleMap[targetShowcase];
-            }
-        });
-    });
 });
+

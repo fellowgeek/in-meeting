@@ -31,6 +31,7 @@
                 <a href="#showcase">Showcase</a>
                 <a href="#features">Features</a>
                 <a href="#installation">Installation</a>
+                <a href="https://github.com/fellowgeek/in-meeting" target="_blank" rel="noopener noreferrer">GitHub</a>
                 <button id="theme-toggle" class="btn-theme-toggle" aria-label="Toggle Theme">
                     <span class="material-symbols-outlined theme-icon-light">light_mode</span>
                     <span class="material-symbols-outlined theme-icon-dark">dark_mode</span>
@@ -42,13 +43,10 @@
     <!-- Hero Section -->
     <section class="hero-section">
         <div class="hero-container">
-            <div class="hero-icon-container">
-                <img src="icon.png" alt="In Meeting macOS App Icon" class="hero-app-icon">
-            </div>
-            <div class="hero-badge">macOS 13.0+ Utility</div>
-            <h1 class="hero-title">Control Your Space, Sync Your Status</h1>
+            <div class="hero-badge">macOS 15.5+ Utility</div>
+            <h1 class="hero-title">Trigger Your Smart Home. Safeguard Your Workspace.</h1>
             <p class="hero-subtitle">
-                A lightweight, background utility that monitors camera and microphone state transitions natively, triggering custom webhooks and notifications with near-zero CPU and battery impact.
+                A lightweight macOS utility that instantly triggers webhooks to update your home automation status lights (free/busy) and displays native notifications the second any app accesses your camera or microphone.
             </p>
             
             <div class="hero-ctas">
@@ -66,129 +64,93 @@
     <section id="about" class="about-section">
         <div class="container small-container">
             <div class="about-card card-glass">
-                <h2 class="section-title">Smart, Native Hardware Monitoring</h2>
+                <h2 class="section-title">Automate & Secure Your Workspace</h2>
                 <p class="about-paragraph">
-                    <strong>In Meeting</strong> is a native macOS application designed to link your physical environment with your video calling hardware. Instead of constantly parsing heavy system log streams or running inefficient background processes that drain your battery, the app registers direct hardware observers with the macOS CoreAudio and CoreMediaIO frameworks.
-                </p>
-                <p class="about-paragraph">
-                    When your webcam turns on or your microphone begins capture, In Meeting intercepts the transition event instantly. It triggers a local HTTP request (webhook) or a system notification, allowing you to sync your smart home lights, toggle status flags on your favorite APIs, or update custom indicators outside your home office door in real-time.
+                    <strong>In Meeting</strong> is a native macOS utility built for smart home enthusiasts and privacy-conscious users. Whether you want to toggle a physical "Do Not Disturb" status light outside your home office door using Home Assistant webhooks, or you want to be alerted instantly with a macOS notification whenever a background application silently accesses your camera or microphone, In Meeting handles it seamlessly.
                 </p>
             </div>
         </div>
     </section>
 
-    <!-- Application Showcase Section (Replacing Simulator) -->
+    <!-- Application Showcase Section -->
     <section id="showcase" class="showcase-section">
         <div class="container">
             <h2 class="section-title">Application Showcase</h2>
             <p class="section-subtitle">Take a look inside the clean status bar control menu and native settings panel.</p>
             
             <div class="showcase-container">
-                <!-- Showcase Tabs Navigation -->
-                <div class="showcase-tabs">
-                    <button class="showcase-tab active" data-showcase="menu">
-                        <span class="material-symbols-outlined tab-symbol">menu_open</span>Status Bar Menu
-                    </button>
-                    <button class="showcase-tab" data-showcase="general">
-                        <span class="material-symbols-outlined tab-symbol">settings</span>General Settings
-                    </button>
-                    <button class="showcase-tab" data-showcase="webhooks">
-                        <span class="material-symbols-outlined tab-symbol">webhook</span>Webhook Sync
-                    </button>
+                <!-- Showcase Row: Status Bar Menu -->
+                <div class="showcase-row">
+                    <div class="screenshot-column">
+                        <img src="menu.webp" alt="Status Bar Menu Screenshot" class="showcase-screenshot">
+                    </div>
+                    <div class="details-column">
+                        <h3>Status Bar Menu</h3>
+                        <p class="showcase-desc">Access options instantly from your macOS menu bar. The menu bar icon changes dynamically to reflect your active hardware capture state.</p>
+                        <ul class="pane-list">
+                            <li>
+                                <span class="material-symbols-outlined check-icon">check_circle</span>
+                                <span>Quick status display for active camera & mic</span>
+                            </li>
+                            <li>
+                                <span class="material-symbols-outlined check-icon">check_circle</span>
+                                <span>One-click temporary pause to suspend tracking</span>
+                            </li>
+                            <li>
+                                <span class="material-symbols-outlined check-icon">check_circle</span>
+                                <span>Direct access to Preferences and Quit actions</span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
 
-                <!-- Showcase Display Window -->
-                <div class="showcase-window panel-glass">
-                    <div class="window-header">
-                        <div class="window-dots">
-                            <span class="dot-red"></span>
-                            <span class="dot-yellow"></span>
-                            <span class="dot-green"></span>
-                        </div>
-                        <span class="window-title" id="showcase-title">Status Bar Menu — In Meeting</span>
+                <!-- Showcase Row: General Preferences -->
+                <div class="showcase-row">
+                    <div class="screenshot-column">
+                        <img src="general.webp" alt="General Settings Screenshot" class="showcase-screenshot">
                     </div>
-                    
-                    <div class="window-content-wrapper">
-                        <!-- Menu Screenshot Screen -->
-                        <div class="showcase-panel active" id="showcase-menu">
-                            <div class="showcase-layout">
-                                <div class="screenshot-pane">
-                                    <img src="menu.webp" alt="Status Bar Menu Screenshot" class="app-screenshot border-radius-sm">
-                                </div>
-                                <div class="description-pane">
-                                    <h3>Status Bar Menu</h3>
-                                    <p class="pane-text">Access options instantly from your macOS menu bar. The menu bar icon changes dynamically to reflect your active hardware capture state.</p>
-                                    <ul class="pane-list">
-                                        <li>
-                                            <span class="material-symbols-outlined check-icon">check_circle</span>
-                                            <span>Quick status display for active camera & mic</span>
-                                        </li>
-                                        <li>
-                                            <span class="material-symbols-outlined check-icon">check_circle</span>
-                                            <span>One-click temporary pause to suspend tracking</span>
-                                        </li>
-                                        <li>
-                                            <span class="material-symbols-outlined check-icon">check_circle</span>
-                                            <span>Direct access to Preferences and Quit actions</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="details-column">
+                        <h3>General Preferences</h3>
+                        <p class="showcase-desc">Tailor the notification responses and start options exactly to your developer workflow.</p>
+                        <ul class="pane-list">
+                            <li>
+                                <span class="material-symbols-outlined check-icon">check_circle</span>
+                                <span>Configure automatic Launch at Login via macOS SMAppService</span>
+                            </li>
+                            <li>
+                                <span class="material-symbols-outlined check-icon">check_circle</span>
+                                <span>Toggle macOS System Notifications for state transitions</span>
+                            </li>
+                            <li>
+                                <span class="material-symbols-outlined check-icon">check_circle</span>
+                                <span>Optionally set separate/combined triggers for camera and microphone</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
 
-                        <!-- General Settings Screen -->
-                        <div class="showcase-panel" id="showcase-general">
-                            <div class="showcase-layout">
-                                <div class="screenshot-pane">
-                                    <img src="general.webp" alt="General Settings Screenshot" class="app-screenshot">
-                                </div>
-                                <div class="description-pane">
-                                    <h3>General Preferences</h3>
-                                    <p class="pane-text">Tailor the notification responses and start options exactly to your developer workflow.</p>
-                                    <ul class="pane-list">
-                                        <li>
-                                            <span class="material-symbols-outlined check-icon">check_circle</span>
-                                            <span>Configure automatic **Launch at Login** via macOS SMAppService</span>
-                                        </li>
-                                        <li>
-                                            <span class="material-symbols-outlined check-icon">check_circle</span>
-                                            <span>Toggle macOS **System Notifications** for state transitions</span>
-                                        </li>
-                                        <li>
-                                            <span class="material-symbols-outlined check-icon">check_circle</span>
-                                            <span>Optionally set separate/combined triggers for camera and microphone</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Webhooks Settings Screen -->
-                        <div class="showcase-panel" id="showcase-webhooks">
-                            <div class="showcase-layout">
-                                <div class="screenshot-pane">
-                                    <img src="webhooks.webp" alt="Webhooks Settings Screenshot" class="app-screenshot">
-                                </div>
-                                <div class="description-pane">
-                                    <h3>Webhook Orchestration</h3>
-                                    <p class="pane-text">Set custom HTTP targets to call when devices activate or deactivate. Integrates with home automation bridges and local servers.</p>
-                                    <ul class="pane-list">
-                                        <li>
-                                            <span class="material-symbols-outlined check-icon">check_circle</span>
-                                            <span>Support for HTTP GET and POST requests</span>
-                                        </li>
-                                        <li>
-                                            <span class="material-symbols-outlined check-icon">check_circle</span>
-                                            <span>Dynamic query placeholders (`{device}`, `{state}`) with automatic percent encoding</span>
-                                        </li>
-                                        <li>
-                                            <span class="material-symbols-outlined check-icon">check_circle</span>
-                                            <span>Built-in exponential backoff retries for network resilience</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+                <!-- Showcase Row: Webhook Orchestration -->
+                <div class="showcase-row">
+                    <div class="screenshot-column">
+                        <img src="webhooks.webp" alt="Webhooks Settings Screenshot" class="showcase-screenshot">
+                    </div>
+                    <div class="details-column">
+                        <h3>Webhook Orchestration</h3>
+                        <p class="showcase-desc">Set custom HTTP targets to call when devices activate or deactivate. Integrates with home automation bridges and local servers.</p>
+                        <ul class="pane-list">
+                            <li>
+                                <span class="material-symbols-outlined check-icon">check_circle</span>
+                                <span>Support for HTTP GET and POST requests</span>
+                            </li>
+                            <li>
+                                <span class="material-symbols-outlined check-icon">check_circle</span>
+                                <span>Dynamic query placeholders (`{device}`, `{state}`) with automatic percent encoding</span>
+                            </li>
+                            <li>
+                                <span class="material-symbols-outlined check-icon">check_circle</span>
+                                <span>Built-in exponential backoff retries for network resilience</span>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -262,8 +224,7 @@
             <div class="tab-container card-glass">
                 <div class="tab-headers">
                     <button class="tab-header active" data-tab="brew">Homebrew (Recommended)</button>
-                    <button class="tab-header" data-tab="xcode-ui">Xcode UI</button>
-                    <button class="tab-header" data-tab="cli">Xcode CLI</button>
+                    <button class="tab-header" data-tab="xcode-ui">Xcode</button>
                 </div>
                 
                 <div class="tab-contents">
@@ -278,7 +239,7 @@
                         <p class="tab-desc">Once installed, open your Applications folder and launch <strong>In Meeting.app</strong>.</p>
                     </div>
 
-                    <!-- Xcode UI Content -->
+                    <!-- Xcode Content -->
                     <div class="tab-panel" id="tab-xcode-ui">
                         <ol class="step-list">
                             <li>
@@ -295,22 +256,6 @@
                                 <strong>Build & Run:</strong> Make sure the scheme dropdown target is set to **In Meeting** and press <code>⌘R</code>.
                             </li>
                         </ol>
-                    </div>
-                    
-                    <!-- CLI Content -->
-                    <div class="tab-panel" id="tab-cli">
-                        <p class="tab-desc">To compile the project directly from the CLI, define your Xcode developer environment variables:</p>
-                        
-                        <div class="code-block-wrapper">
-                            <pre><code>DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild -project "In Meeting.xcodeproj" -scheme "In Meeting" clean build</code></pre>
-                            <button class="btn-copy" data-copy="DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild -project &quot;In Meeting.xcodeproj&quot; -scheme &quot;In Meeting&quot; clean build">Copy</button>
-                        </div>
-                        
-                        <p class="tab-desc">Run the compiled application binary file to print real-time state changes to stdout:</p>
-                        <div class="code-block-wrapper">
-                            <pre><code>~/Library/Developer/Xcode/DerivedData/In_Meeting-&lt;hash&gt;/Build/Products/Debug/In\ Meeting.app/Contents/MacOS/In\ Meeting</code></pre>
-                            <button class="btn-copy" data-copy="~/Library/Developer/Xcode/DerivedData/In_Meeting-&lt;hash&gt;/Build/Products/Debug/In\ Meeting.app/Contents/MacOS/In\ Meeting">Copy</button>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -342,9 +287,9 @@
     <!-- Footer -->
     <footer class="app-footer">
         <div class="container">
-            <p>In Meeting Utility — Created by Erfan Reed</p>
-            <p class="footer-subtext">Open Source macOS Application licensed under the MIT License.</p>
-            <p class="footer-subtext font-size-xs">Designed for macOS 13.0+. Sandbox disabled to support hardware device registries.</p>
+            <p>In Meeting Utility - Created by Erfan Reed</p>
+            <p class="footer-subtext">Open Source macOS Application licensed under the <a href="https://github.com/fellowgeek/in-meeting/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a>. View on <a href="https://github.com/fellowgeek/in-meeting" target="_blank" rel="noopener noreferrer">GitHub</a>.</p>
+            <p class="footer-subtext font-size-xs">Designed for macOS 15.5+. Sandbox disabled to support hardware device registries.</p>
         </div>
     </footer>
 
