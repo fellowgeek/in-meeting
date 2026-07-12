@@ -42,12 +42,12 @@ struct SettingsView: View {
             
             // Footer with Version & About Link
             HStack {
-                Text("In Meeting Utility v1.0")
+                Text("In Meeting Utility v1.0.0")
                     .foregroundColor(.secondary)
                     .font(.callout)
                 Spacer()
                 Button(action: {
-                    if let url = URL(string: "https://example.com") {
+                    if let url = URL(string: "https://github.com/fellowgeek/in-meeting") {
                         NSWorkspace.shared.open(url)
                     }
                 }) {

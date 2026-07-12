@@ -390,7 +390,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
     
     @objc func openAbout() {
-        if let url = URL(string: "https://example.com") {
+        if let url = URL(string: "https://github.com/fellowgeek/in-meeting") {
             NSWorkspace.shared.open(url)
         }
     }
