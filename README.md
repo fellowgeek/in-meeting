@@ -1,8 +1,8 @@
 # In Meeting — macOS Status Monitor
 
-**In Meeting** is a lightweight, high-performance macOS Menu Bar application that monitors the hardware activation state of connected camera and microphone devices in real-time. When a device becomes active or inactive, the utility instantly dispatches user-configured webhooks (e.g. to control smart lights, Home Assistant, Slack status, or web portals) and schedules native macOS notifications.
+**In Meeting** is a native macOS utility built for smart home enthusiasts and privacy-conscious users. Whether you want to toggle a physical "Do Not Disturb" status light outside your home office door using Home Assistant webhooks, or you want to be alerted instantly with a macOS notification whenever a background application silently accesses your camera or microphone, **In Meeting** handles it seamlessly.
 
-Unlike heavy log-polling scripts, **In Meeting** relies entirely on native macOS framework observers, resulting in near-zero CPU and battery impact.
+A lightweight macOS utility that instantly triggers webhooks to update your home automation status lights (free/busy) and displays native notifications the second any app accesses your camera or microphone. Unlike heavy log-polling scripts, it relies entirely on native macOS framework observers, resulting in near-zero CPU and battery impact.
 
 ---
 
@@ -48,6 +48,16 @@ graph TD
 
 ---
 
+## Privacy First
+
+**In Meeting** values your confidentiality:
+- **Zero Telemetry**: No tracking data, usage logs, or crash reports are uploaded.
+- **Zero Analytics**: No third-party tracking libraries or identifiers are integrated.
+- **Zero External Queries**: No remote network requests are performed except for the custom Webhook URLs you configure.
+- **Strictly Local**: All hardware device observation processes execute entirely on your device. Webhook payloads are transmitted directly to your designated local or remote targets.
+
+---
+
 ## How to Build and Run
 
 ### Option 1: Install via Homebrew (Recommended)
@@ -63,20 +73,6 @@ Once installed, open your `Applications` folder and launch **In Meeting.app**.
 1. Clone the repository and double-click [In Meeting.xcodeproj](In%20Meeting.xcodeproj) to open it in Xcode.
 2. Select the target scheme **In Meeting** from the scheme selector in the top toolbar.
 3. Click the **Run** button (or press `⌘R`) to build and launch the application.
-
-### Option 3: Build from Command Line
-Because macOS command-line tool chains might point to standalone CommandLineTools without default Swift compiler flags for app targets, explicitly set the `DEVELOPER_DIR` variable to build using the Xcode bundle toolchain:
-
-```bash
-DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild -project "In Meeting.xcodeproj" -scheme "In Meeting" clean build
-```
-
-### Run from Command Line
-To view stdout transition logs in real-time, launch the compiled binary directly from the terminal (using the home folder variable `~/`):
-
-```bash
-~/Library/Developer/Xcode/DerivedData/In_Meeting-<hash>/Build/Products/Debug/In\ Meeting.app/Contents/MacOS/In\ Meeting
-```
 
 ---
 
