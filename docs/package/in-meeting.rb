@@ -1,6 +1,6 @@
 cask "in-meeting" do
   version "1.0.0"
-  sha256 "5246c7ffdd99c1de26b309d1e33b6ea29f2af92bd1592a5493b3052d44925b4b"
+  sha256 "a80840aa859006b9c8d57cd2e06e3cc41939045f937e8a763fbd65ed024d7719"
 
   url "https://github.com/fellowgeek/in-meeting/releases/download/v#{version}/in-meeting.dmg"
   name "in-meeting"
