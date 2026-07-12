@@ -29,10 +29,10 @@ The application must follow macOS design guidelines, adopting native components 
   - **Active State (Device in Use):** A filled recording circle indicator (using SF Symbol `record.circle.fill`).
   - **Paused State:** A camera outline with a slash (using SF Symbol `video.slash`).
 - **Status Menu (Left-Click Menu):**
-  - **Active Device Status:** Displays a list of active devices (e.g., `● FaceTime HD Camera` in red, or `○ Microphones` in gray if inactive).
+  - **Active Device Status:** Displays a list of monitored devices with emojis indicating status: 🔴 (active) or ⚪ (idle), type symbols 📹 (video) or 🎤 (audio), the device name, and text state (Active/Idle).
   - **Pause Detection / Resume Detection:** A toggle item that temporarily halts event triggers.
   - **Preferences... / Settings...:** Opens the settings window (Keyboard Shortcut: `⌘,`).
-  - **About:** Opens `example.com` in the default web browser (to be replaced with actual project site).
+  - **About:** Opens `https://example.com` in the default web browser (to be replaced with actual project site).
   - **Quit:** Terminates the application (Keyboard Shortcut: `⌘Q`).
 
 ### 2.2 Settings Window (Preferences UI)
@@ -61,7 +61,8 @@ A native-feeling tabbed or sidebar preferences window containing the following s
     - `{{device_type}}`: The medium type, either `camera` or `microphone`.
     - `{{device_status}}`: The new status, either `active` or `inactive`.
     - `{{timestamp}}`: ISO 8601 formatted timestamp of the event.
-  - **Test Webhook Button:** Allows the user to trigger a sample webhook call with fake details to verify connection and payload formatting.
+  - **Test Webhook Button & Inline Feedback:** Allows the user to trigger a sample webhook call with fake details to verify connection and payload formatting. Displays a progress loader (`ProgressView`) during testing, followed by a status message confirming success or specifying validation/transport errors.
+  - **URL Input Validation:** Each endpoint field highlights errors and disables testing or dispatch if the entered string is not a valid URL formatting structure.
 
 ---
 
@@ -150,4 +151,7 @@ The following design and technical decisions have been finalized based on user f
 - **Webhook Retry Policy:** Failed webhook calls (e.g. network timeout or connection lost) will be retried up to **3 times** before logging a final error.
 - **Menu Bar Icon Design:** Uses a **single unified icon** that represents overall status (active device, paused detection, or idle state).
 - **Notification Text:** Standard system notification message layout is sufficient. Custom templates are not required.
+- **Menu Interactivity and Enablement:** Setting `statusMenu.autoenablesItems = false` ensures that custom items aren't disabled automatically. Monitored device items are disabled/enabled based on whether they are running (`item.isEnabled = isRunning`). Control buttons (Pause, Settings, About, Quit) are explicitly marked `isEnabled = true`.
+- **Input Validation:** Webhook URL endpoints are validated in real-time, preventing request dispatches or simulations to incomplete or faulty destinations.
+- **Nordic Frost Landing Page:** Implemented a sleek, responsive landing website inside the `docs/` folder (GitHub Pages compatible), facilitating Homebrew (`brew install in-meeting`) or Xcode-based compilation steps, explaining architecture, and reinforcing privacy policies (no trackers/analytics).
 

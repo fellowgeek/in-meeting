@@ -171,6 +171,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         
         statusMenu = NSMenu()
+        statusMenu.autoenablesItems = false
         statusMenu.delegate = self
         statusItem.menu = statusMenu
     }
@@ -334,7 +335,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 let title = "  \(statusDot) \(typeSymbol) \(monitor.device.localizedName) (\(stateText))"
                 
                 let item = NSMenuItem(title: title, action: nil, keyEquivalent: "")
-                item.isEnabled = false
+                item.isEnabled = isRunning
                 menu.addItem(item)
             }
         }
@@ -345,22 +346,26 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let isPaused = SettingsManager.shared.isPaused
         let pauseTitle = isPaused ? "Resume Detection" : "Pause Detection"
         let pauseItem = NSMenuItem(title: pauseTitle, action: #selector(togglePause), keyEquivalent: "")
+        pauseItem.isEnabled = true
         menu.addItem(pauseItem)
         
         menu.addItem(NSMenuItem.separator())
         
         // 4. Open Settings
         let settingsItem = NSMenuItem(title: "Settings...", action: #selector(openSettings), keyEquivalent: ",")
+        settingsItem.isEnabled = true
         menu.addItem(settingsItem)
         
         // 5. About
         let aboutItem = NSMenuItem(title: "About...", action: #selector(openAbout), keyEquivalent: "")
+        aboutItem.isEnabled = true
         menu.addItem(aboutItem)
         
         menu.addItem(NSMenuItem.separator())
         
         // 6. Quit App
         let quitItem = NSMenuItem(title: "Quit In Meeting", action: #selector(quitApp), keyEquivalent: "q")
+        quitItem.isEnabled = true
         menu.addItem(quitItem)
     }
     

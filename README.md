@@ -19,6 +19,7 @@ Unlike heavy log-polling scripts, **In Meeting** relies entirely on native macOS
   - **Fault Tolerance**: Automatic background retries up to **3 times** with exponential backoff on connection or server (5xx) errors.
 - **Local macOS Notifications**: Triggers native User Notification banners with status summaries matching PRD guidelines.
 - **UI Settings Panel**: A clean, modern SwiftUI window that avoids typical macOS Form alignment bugs.
+- **Privacy First & MIT Licensed**: Features zero telemetry, zero analytics tracking, and zero external queries. All device observations remain local, and webhook requests are made directly to user targets. The codebase is fully open source under the MIT License.
 
 ---
 
@@ -49,12 +50,21 @@ graph TD
 
 ## How to Build and Run
 
-### Option 1: Build & Run with Xcode UI (Recommended)
-1. Double-click [In Meeting.xcodeproj](In%20Meeting.xcodeproj) to open the project in Xcode.
+### Option 1: Install via Homebrew (Recommended)
+If you prefer a precompiled application bundle, you can install it using Homebrew:
+
+```bash
+brew install in-meeting
+```
+
+Once installed, open your `Applications` folder and launch **In Meeting.app**.
+
+### Option 2: Build & Run with Xcode UI
+1. Clone the repository and double-click [In Meeting.xcodeproj](In%20Meeting.xcodeproj) to open it in Xcode.
 2. Select the target scheme **In Meeting** from the scheme selector in the top toolbar.
 3. Click the **Run** button (or press `⌘R`) to build and launch the application.
 
-### Option 2: Build from Command Line
+### Option 3: Build from Command Line
 Because macOS command-line tool chains might point to standalone CommandLineTools without default Swift compiler flags for app targets, explicitly set the `DEVELOPER_DIR` variable to build using the Xcode bundle toolchain:
 
 ```bash
@@ -78,3 +88,4 @@ To view stdout transition logs in real-time, launch the compiled binary directly
 - [SettingsView.swift](In%20Meeting/SettingsView.swift): SwiftUI view displaying user configuration options.
 - [SettingsWindowController.swift](In%20Meeting/SettingsWindowController.swift): Native window controller host for the settings viewport.
 - [WebhookManager.swift](In%20Meeting/WebhookManager.swift): Manages placeholder formatting and asynchronous HTTP execution with retry logic.
+- [docs/index.html](docs/index.html), [docs/index.css](docs/index.css), [docs/index.js](docs/index.js): Files for the Nordic Frost landing page website and documentation hub.
