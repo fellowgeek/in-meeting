@@ -1,4 +1,4 @@
-# In Meeting — macOS Status Monitor
+# In Meeting - macOS Status Monitor
 
 **In Meeting** is a native macOS utility built for smart home enthusiasts and privacy-conscious users. Whether you want to toggle a physical "Do Not Disturb" status light outside your home office door using Home Assistant webhooks, or you want to be alerted instantly with a macOS notification whenever a background application silently accesses your camera or microphone, **In Meeting** handles it seamlessly.
 
