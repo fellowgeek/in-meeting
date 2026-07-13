@@ -103,16 +103,49 @@ A native-feeling tabbed or sidebar preferences window containing the following s
 
 ```mermaid
 graph TD
-    A[AVCaptureDevice Discovery] --> B[MonitoredDevice Core Hooks]
-    B -->|Audio: CoreAudio Listener| C[Detection Engine]
-    B -->|Video: CoreMediaIO Listener| C
-    C -->|If Unpaused| D{Trigger Routing}
-    C -->|If Paused| E[Log & Ignore]
-    D -->|Toggle Option 1| F[macOS UserNotifications]
-    D -->|Toggle Option 2| G[Webhook Client]
-    G -->|Combined Hook| H[Combined Endpoint]
-    G -->|Separate Hooks| I[Audio URL / Video URL]
-    G -->|Payload Assembly| J[URLSession Background Task]
+    %% Discovery & Lifecycle
+    subgraph Discovery ["Hardware Discovery & Lifecycle"]
+        A[AVCaptureDevice Discovery] -->|Finds Microphones & Cameras| B[Create MonitoredDevice Wrapper]
+        C[AVCaptureDevice Notifications] -->|WasConnected / WasDisconnected| B
+    end
+
+    %% State Monitoring
+    subgraph Monitoring ["State Monitoring Engine"]
+        B -->|KVC Introspection| D[Extract connectionID]
+        D -->|If Audio Device| E["CoreAudio Listener Registration (AudioObjectAddPropertyListenerBlock)"]
+        D -->|If Video Device| F["CoreMediaIO Listener Registration (CMIOObjectAddPropertyListenerBlock)"]
+        E -->|kAudioDevicePropertyDeviceIsRunningSomewhere| G[Hardware State Change Block]
+        F -->|kAudioDevicePropertyDeviceIsRunningSomewhere| G
+    end
+
+    %% Routing
+    subgraph Routing ["Event Dispatcher (AppDelegate)"]
+        G -->|Active / Inactive Event| H{"Is Detection Paused?"}
+        H -->|Yes| I[Log Event & Ignore]
+        H -->|No| J[Dispatch Event]
+    end
+
+    %% Targets
+    subgraph Actions ["Action Execution"]
+        J -->|Local Alerts| K["NotificationManager (UserNotifications Framework)"]
+        J -->|Network Hooks| L[WebhookManager]
+        
+        L --> M{Webhook Routing Type}
+        
+        M -->|Combined| N[Active/Inactive Endpoint]
+        M -->|Separate| O[Audio / Video Endpoints]
+        
+        N --> P[Resolve Placeholders & URL-Encode Query]
+        O --> P
+        P --> Q["Assemble URLRequest (GET/POST & Payload Template)"]
+        Q --> R[URLSession Asynchronous Data Task]
+        R --> S{Request Status}
+        S -->|Success 2xx| T[Log Dispatch Success]
+        S -->|Transport / 5xx Error| U{"Attempts < 3?"}
+        U -->|Yes| V["Schedule Retry (Exponential Backoff Delay)"]
+        V --> R
+        U -->|No| W[Log Final Dispatch Failure]
+    end
 ```
 
 ### 4.1 Technology Stack
