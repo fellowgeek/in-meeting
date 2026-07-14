@@ -12,6 +12,7 @@ A lightweight macOS utility that instantly triggers webhooks to update your home
 
 - **Direct Hardware Observers**: Connects directly to CoreAudio (microphones) and CoreMediaIO (cameras) registry notifications to detect state transitions instantly.
 - **Menu Bar Status Integration**: Runs exclusively as a Menu Bar accessory with outline, recording, and slash icons representing current idle, active, or paused states.
+- **Selectable Device Exclusions**: Allows toggle-clicking on any monitored device in the status bar menu. Unchecked devices are excluded from triggering local notifications or webhooks.
 - **Launch at Login**: Integrates with the modern macOS 13+ `SMAppService` API to launch automatically when you log in.
 - **Webhook Integrations**:
   - Supports **Combined URLs** (sending all video/audio events to single active/inactive endpoints) or **Separate URLs** (individual URLs for audio active, audio inactive, video active, and video inactive).
@@ -48,7 +49,9 @@ graph TD
     subgraph Routing ["Event Dispatcher (AppDelegate)"]
         G -->|Active / Inactive Event| H{"Is Detection Paused?"}
         H -->|Yes| I[Log Event & Ignore]
-        H -->|No| J[Dispatch Event]
+        H -->|No| J1{"Is Device Excluded?"}
+        J1 -->|Yes| I2["Log Event (Excluded) & Ignore"]
+        J1 -->|No| J[Dispatch Event]
     end
 
     %% Targets

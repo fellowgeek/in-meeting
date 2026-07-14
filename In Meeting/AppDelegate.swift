@@ -288,6 +288,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         // 2. Short-circuit alerts if global monitoring is paused
         guard !SettingsManager.shared.isPaused else { return }
         
+        // Skip events if the device is excluded from alerts
+        guard !SettingsManager.shared.excludedDeviceIDs.contains(device.uniqueID) else {
+            print("Device event ignored (device is excluded): \(device.localizedName)")
+            return
+        }
+        
         // 3. Dispatch Local Notifications
         NotificationManager.shared.sendNotification(
             deviceName: device.localizedName,
@@ -334,8 +340,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 let stateText = isRunning ? "Active" : "Idle"
                 let title = "  \(statusDot) \(typeSymbol) \(monitor.device.localizedName) (\(stateText))"
                 
-                let item = NSMenuItem(title: title, action: nil, keyEquivalent: "")
-                item.isEnabled = isRunning
+                let item = NSMenuItem(title: title, action: #selector(toggleDeviceEnabled(_:)), keyEquivalent: "")
+                item.target = self
+                item.representedObject = monitor.device.uniqueID
+                
+                let isExcluded = SettingsManager.shared.excludedDeviceIDs.contains(monitor.device.uniqueID)
+                item.state = isExcluded ? .off : .on
+                item.isEnabled = true
+                
                 menu.addItem(item)
             }
         }
@@ -370,6 +382,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
     
     // MARK: - Menu Actions
+    
+    @objc func toggleDeviceEnabled(_ sender: NSMenuItem) {
+        guard let uuid = sender.representedObject as? String else { return }
+        
+        if SettingsManager.shared.excludedDeviceIDs.contains(uuid) {
+            SettingsManager.shared.excludedDeviceIDs.remove(uuid)
+            print("Device alerts ENABLED for UUID: \(uuid)")
+        } else {
+            SettingsManager.shared.excludedDeviceIDs.insert(uuid)
+            print("Device alerts DISABLED for UUID: \(uuid)")
+        }
+        
+        updateStatusItemIcon()
+    }
     
     @objc func togglePause() {
         SettingsManager.shared.isPaused.toggle()

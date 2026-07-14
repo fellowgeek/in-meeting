@@ -29,7 +29,7 @@ The application must follow macOS design guidelines, adopting native components 
   - **Active State (Device in Use):** A filled recording circle indicator (using SF Symbol `record.circle.fill`).
   - **Paused State:** A camera outline with a slash (using SF Symbol `video.slash`).
 - **Status Menu (Left-Click Menu):**
-  - **Active Device Status:** Displays a list of monitored devices with emojis indicating status: 🔴 (active) or ⚪ (idle), type symbols 📹 (video) or 🎤 (audio), the device name, and text state (Active/Idle).
+  - **Monitored Devices & Exclusions:** Displays a list of monitored devices with checkmarks on their left (checked by default, meaning enabled). Users can click a device item to toggle its checkmark (enable/exclude it from alerts). Displays emojis indicating status: 🔴 (active) or ⚪ (idle), type symbols 📹 (video) or 🎤 (audio), the device name, and text state (Active/Idle).
   - **Pause Detection / Resume Detection:** A toggle item that temporarily halts event triggers.
   - **Preferences... / Settings...:** Opens the settings window (Keyboard Shortcut: `⌘,`).
   - **About:** Opens `https://example.com` in the default web browser (to be replaced with actual project site).
@@ -76,6 +76,10 @@ A native-feeling tabbed or sidebar preferences window containing the following s
   - When the user selects **Pause Detection**, the app must unregister listeners or short-circuit callbacks.
   - No webhooks or notifications are fired while paused.
   - When **Resume Detection** is clicked, listeners are re-established or active states are queried immediately to synchronize the current hardware status.
+- **Device Exclusions:**
+  - Users can exclude specific devices from triggering notifications or webhooks by unchecking them in the status bar menu.
+  - The list of excluded device unique IDs is saved to `UserDefaults` under `excludedDeviceIDs` and loaded dynamically at startup.
+  - An excluded device's state transitions are ignored for notifications and webhook dispatches, but console logging and status bar icon calculations remain active.
 
 ### 3.2 Webhook Request Engine
 - **Trigger Execution:** When a state transition occurs (Active <-> Inactive) for any monitored device:
@@ -122,7 +126,9 @@ graph TD
     subgraph Routing ["Event Dispatcher (AppDelegate)"]
         G -->|Active / Inactive Event| H{"Is Detection Paused?"}
         H -->|Yes| I[Log Event & Ignore]
-        H -->|No| J[Dispatch Event]
+        H -->|No| J1{"Is Device Excluded?"}
+        J1 -->|Yes| I2["Log Event (Excluded) & Ignore"]
+        J1 -->|No| J[Dispatch Event]
     end
 
     %% Targets
@@ -184,7 +190,7 @@ The following design and technical decisions have been finalized based on user f
 - **Webhook Retry Policy:** Failed webhook calls (e.g. network timeout or connection lost) will be retried up to **3 times** before logging a final error.
 - **Menu Bar Icon Design:** Uses a **single unified icon** that represents overall status (active device, paused detection, or idle state).
 - **Notification Text:** Standard system notification message layout is sufficient. Custom templates are not required.
-- **Menu Interactivity and Enablement:** Setting `statusMenu.autoenablesItems = false` ensures that custom items aren't disabled automatically. Monitored device items are disabled/enabled based on whether they are running (`item.isEnabled = isRunning`). Control buttons (Pause, Settings, About, Quit) are explicitly marked `isEnabled = true`.
+- **Menu Interactivity and Enablement:** Setting `statusMenu.autoenablesItems = false` ensures that custom items aren't disabled automatically. Monitored device items are set to `isEnabled = true` to allow click-to-toggle checkmark interactions. Clicking a device item toggles its exclusion state (checked = enabled, unchecked = excluded). Control buttons (Pause, Settings, About, Quit) are explicitly marked `isEnabled = true`.
 - **Input Validation:** Webhook URL endpoints are validated in real-time, preventing request dispatches or simulations to incomplete or faulty destinations.
 - **Nordic Frost Landing Page:** Implemented a sleek, responsive landing website inside the `docs/` folder (GitHub Pages compatible), facilitating Homebrew (`brew install in-meeting`) or Xcode-based compilation steps, explaining architecture, and reinforcing privacy policies (no trackers/analytics).
 

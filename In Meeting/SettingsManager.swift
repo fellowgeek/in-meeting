@@ -27,6 +27,7 @@ class SettingsManager: ObservableObject {
     private let kCustomTemplate = "customTemplate"
     private let kIsPaused = "isPaused"
     private let kLaunchAtLogin = "launchAtLogin"
+    private let kExcludedDeviceIDs = "excludedDeviceIDs"
     
     @Published var notificationsEnabled: Bool = true {
         didSet { defaults.set(notificationsEnabled, forKey: kNotificationsEnabled) }
@@ -84,6 +85,10 @@ class SettingsManager: ObservableObject {
         didSet { defaults.set(isPaused, forKey: kIsPaused) }
     }
     
+    @Published var excludedDeviceIDs: Set<String> = [] {
+        didSet { defaults.set(Array(excludedDeviceIDs), forKey: kExcludedDeviceIDs) }
+    }
+    
     @Published var launchAtLogin: Bool = false {
         didSet {
             defaults.set(launchAtLogin, forKey: kLaunchAtLogin)
@@ -115,7 +120,8 @@ class SettingsManager: ObservableObject {
             }
             """,
             kIsPaused: false,
-            kLaunchAtLogin: false
+            kLaunchAtLogin: false,
+            kExcludedDeviceIDs: [String]()
         ])
     }
     
@@ -135,6 +141,12 @@ class SettingsManager: ObservableObject {
         customTemplateEnabled = defaults.bool(forKey: kCustomTemplateEnabled)
         customTemplate = defaults.string(forKey: kCustomTemplate) ?? ""
         isPaused = defaults.bool(forKey: kIsPaused)
+        
+        if let savedExcluded = defaults.stringArray(forKey: kExcludedDeviceIDs) {
+            excludedDeviceIDs = Set(savedExcluded)
+        } else {
+            excludedDeviceIDs = []
+        }
         
         let systemEnabled = SMAppService.mainApp.status == .enabled
         let savedEnabled = defaults.bool(forKey: kLaunchAtLogin)
