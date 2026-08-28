@@ -1,3 +1,5 @@
+
+
 # In Meeting - macOS Camera/Microphone Status Monitor
 
 **In Meeting** is a native macOS utility built for smart home enthusiasts and privacy-conscious users. Whether you want to toggle a physical "Do Not Disturb" status light outside your home office door using Home Assistant webhooks, or you want to be alerted instantly with a macOS notification whenever a background application silently accesses your camera or microphone, **In Meeting** handles it seamlessly.
@@ -105,7 +107,7 @@ If you prefer a precompiled application bundle, you can install it using Homebre
 brew install fellowgeek/tap/in-meeting
 ```
 
-Once installed, open your `Applications` folder and launch **In Meeting.app**.
+The Homebrew cask requires macOS 14.0+ (Sonoma). Once installed, open your `Applications` folder and launch **In Meeting.app**.
 
 ### Option 2: Build & Run with Xcode UI
 1. Clone the repository and double-click [In Meeting.xcodeproj](In%20Meeting.xcodeproj) to open it in Xcode.
