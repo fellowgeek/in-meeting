@@ -42,7 +42,7 @@ struct SettingsView: View {
             
             // Footer with Version & About Link
             HStack {
-                Text("In Meeting Utility v1.0.0")
+                Text("In Meeting Utility v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.1.0")")
                     .foregroundColor(.secondary)
                     .font(.callout)
                 Spacer()
@@ -84,6 +84,19 @@ struct SettingsView: View {
                     .padding(.leading, 24)
                     .transition(.slide.combined(with: .opacity))
                 }
+            }
+            
+            Divider()
+                .padding(.vertical, 8)
+            
+            VStack(alignment: .leading, spacing: 10) {
+                Toggle("Enable Status File Indicator (~/.in-meeting)", isOn: $settings.statusFileEnabled)
+                    .font(.headline)
+                
+                Text("Writes \"active\" or \"inactive\" to ~/.in-meeting whenever your camera or microphone status changes.")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .padding(.leading, 20)
             }
             
             Divider()

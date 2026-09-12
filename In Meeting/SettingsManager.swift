@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 import ServiceManagement
+import AppKit
 
 class SettingsManager: ObservableObject {
     static let shared: SettingsManager = {
@@ -15,6 +16,7 @@ class SettingsManager: ObservableObject {
     private let kNotificationsEnabled = "notificationsEnabled"
     private let kNotifyOnActivation = "notifyOnActivation"
     private let kNotifyOnDeactivation = "notifyOnDeactivation"
+    private let kStatusFileEnabled = "statusFileEnabled"
     private let kWebhookType = "webhookType" // "combined" or "separate"
     private let kCombinedActiveURL = "combinedActiveURL"
     private let kCombinedInactiveURL = "combinedInactiveURL"
@@ -28,6 +30,10 @@ class SettingsManager: ObservableObject {
     private let kIsPaused = "isPaused"
     private let kLaunchAtLogin = "launchAtLogin"
     private let kExcludedDeviceIDs = "excludedDeviceIDs"
+    
+    @Published var statusFileEnabled: Bool = true {
+        didSet { defaults.set(statusFileEnabled, forKey: kStatusFileEnabled) }
+    }
     
     @Published var notificationsEnabled: Bool = true {
         didSet { defaults.set(notificationsEnabled, forKey: kNotificationsEnabled) }
@@ -99,6 +105,7 @@ class SettingsManager: ObservableObject {
     private init() {
         // Register default configurations in UserDefaults
         defaults.register(defaults: [
+            kStatusFileEnabled: true,
             kNotificationsEnabled: true,
             kNotifyOnActivation: true,
             kNotifyOnDeactivation: true,
@@ -127,6 +134,11 @@ class SettingsManager: ObservableObject {
     
     // Load persisted values into properties
     func load() {
+        if defaults.object(forKey: kStatusFileEnabled) != nil {
+            statusFileEnabled = defaults.bool(forKey: kStatusFileEnabled)
+        } else {
+            statusFileEnabled = true
+        }
         notificationsEnabled = defaults.bool(forKey: kNotificationsEnabled)
         notifyOnActivation = defaults.bool(forKey: kNotifyOnActivation)
         notifyOnDeactivation = defaults.bool(forKey: kNotifyOnDeactivation)

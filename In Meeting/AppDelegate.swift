@@ -2,6 +2,7 @@ import Cocoa
 import AVFoundation
 import CoreAudio
 import CoreMediaIO
+import Combine
 
 /// A helper class that monitors the active running state of a camera or microphone AVCaptureDevice.
 class MonitoredDevice {
@@ -140,6 +141,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     
     /// The context menu for the status item
     var statusMenu: NSMenu!
+    
+    private var cancellables = Set<AnyCancellable>()
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         setbuf(Darwin.stdout, nil)
@@ -163,8 +166,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         setupObservers()
         discoverAndMonitorDevices()
         
-        // 6. Update visual icon state
-        updateStatusItemIcon()
+        // 6. Update visual icon state and status file
+        updateMeetingStatus()
     }
 
     func setupStatusItem() {
@@ -176,11 +179,26 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         statusItem.menu = statusMenu
     }
     
+    /// Returns true if at least one non-excluded monitored device is running and detection is not paused.
+    var hasActiveMonitoredDevices: Bool {
+        guard !SettingsManager.shared.isPaused else { return false }
+        return activeMonitors.values.contains { monitor in
+            !SettingsManager.shared.excludedDeviceIDs.contains(monitor.device.uniqueID) && monitor.queryIsRunning()
+        }
+    }
+
+    /// Updates both the local status file indicator (~/.in-meeting) and the menu bar icon.
+    func updateMeetingStatus() {
+        let hasActiveDevices = hasActiveMonitoredDevices
+        StatusFileManager.shared.updateStatus(isActive: hasActiveDevices)
+        updateStatusItemIcon()
+    }
+
     func updateStatusItemIcon() {
         guard let button = statusItem.button else { return }
         
         let isPaused = SettingsManager.shared.isPaused
-        let hasActiveDevices = activeMonitors.values.contains { $0.queryIsRunning() }
+        let hasActiveDevices = hasActiveMonitoredDevices
         
         let symbolName: String
         if isPaused {
@@ -210,6 +228,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let center = NotificationCenter.default
         center.addObserver(self, selector: #selector(deviceWasConnected(_:)), name: AVCaptureDevice.wasConnectedNotification, object: nil)
         center.addObserver(self, selector: #selector(deviceWasDisconnected(_:)), name: AVCaptureDevice.wasDisconnectedNotification, object: nil)
+        
+        // Observe changes to the Status File Indicator setting
+        SettingsManager.shared.$statusFileEnabled
+            .dropFirst()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isEnabled in
+                guard let self = self else { return }
+                StatusFileManager.shared.handleEnabledChanged(isEnabled, isActive: self.hasActiveMonitoredDevices)
+            }
+            .store(in: &cancellables)
     }
 
     func discoverAndMonitorDevices() {
@@ -250,7 +278,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         activeMonitors[uuid] = monitor
 
         print("Device Discovered: \(device.localizedName) (UUID: \(uuid)), Active: \(monitor.queryIsRunning())")
-        updateStatusItemIcon()
+        updateMeetingStatus()
     }
 
     func unmonitorDevice(_ device: AVCaptureDevice) {
@@ -259,7 +287,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             monitor.stopMonitoring()
             activeMonitors.removeValue(forKey: uuid)
             print("Device Removed: \(device.localizedName) (UUID: \(uuid))")
-            updateStatusItemIcon()
+            updateMeetingStatus()
         }
     }
 
@@ -282,8 +310,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
     
     func handleDeviceStateChange(_ device: AVCaptureDevice, isVideo: Bool, isRunning: Bool) {
-        // 1. Redraw status bar icon state
-        updateStatusItemIcon()
+        // 1. Redraw status bar icon state and status file
+        updateMeetingStatus()
         
         // 2. Short-circuit alerts if global monitoring is paused
         guard !SettingsManager.shared.isPaused else { return }
@@ -310,6 +338,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
+        StatusFileManager.shared.cleanup()
         for monitor in activeMonitors.values {
             monitor.stopMonitoring()
         }
@@ -394,12 +423,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             print("Device alerts DISABLED for UUID: \(uuid)")
         }
         
-        updateStatusItemIcon()
+        updateMeetingStatus()
     }
     
     @objc func togglePause() {
         SettingsManager.shared.isPaused.toggle()
-        updateStatusItemIcon()
+        updateMeetingStatus()
         
         let isPaused = SettingsManager.shared.isPaused
         print("Detection \(isPaused ? "PAUSED" : "RESUMED")")
